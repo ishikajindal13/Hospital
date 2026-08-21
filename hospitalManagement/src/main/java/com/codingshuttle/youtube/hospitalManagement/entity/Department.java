@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 @Entity
@@ -27,8 +27,8 @@ public class Department {
     private String name;
 
 
-    // multiple mapping betweebn same entities
-    @OneToOne     // 1 mapiing
+    // multiple mapping between same entities
+    @OneToOne     // 1 mapping
     private Doctor headDoctor;
 
     @ManyToMany

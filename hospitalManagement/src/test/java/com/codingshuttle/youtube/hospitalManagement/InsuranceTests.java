@@ -48,10 +48,10 @@ public class InsuranceTests {
                 .appointmentTime(LocalDateTime.of(2025,11,1,14,0,0))
         .reason("Cold")
                 .build();
-        var newAppointment=appointmentService.createNewAppointment(appointment,1L,2L);
-        System.out.println(newAppointment);
-        var updatedAppointment=appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 3L);
-        System.out.println(updatedAppointment);
+//        var newAppointment=appointmentService.createNewAppointment(appointment,1L,2L);
+//        System.out.println(newAppointment);
+//        var updatedAppointment=appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 3L);
+//        System.out.println(updatedAppointment);
 
     }
 

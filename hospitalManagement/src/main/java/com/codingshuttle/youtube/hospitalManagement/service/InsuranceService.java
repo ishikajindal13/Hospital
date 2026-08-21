@@ -1,8 +1,8 @@
 package com.codingshuttle.youtube.hospitalManagement.service;
 
 
-import com.codingshuttle.youtube.hospitalManagement.Repository.InsuranceRepository;
-import com.codingshuttle.youtube.hospitalManagement.Repository.PatientRepository;
+import com.codingshuttle.youtube.hospitalManagement.repository.InsuranceRepository;
+import com.codingshuttle.youtube.hospitalManagement.repository.PatientRepository;
 import com.codingshuttle.youtube.hospitalManagement.entity.Insurance;
 import com.codingshuttle.youtube.hospitalManagement.entity.Patient;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,9 +18,9 @@ public class InsuranceService {
     private final PatientRepository patientRepository;
 
     @Transactional
-    public Patient assignInsuranceToPatient(Insurance insurance,Long patientId){
-        Patient patient=patientRepository.findById(patientId).orElseThrow(()-> new EntityNotFoundException("Patient not found with id :"+patientId));
-        patient.setInsurance(insurance);
+    public Patient assignInsuranceToPatient(Insurance insurance,Long patientId){ // insurance is in transist state
+        Patient patient=patientRepository.findById(patientId).orElseThrow(()-> new EntityNotFoundException("Patient not found with id :"+patientId)); // patiemnt coms to persistent sat5e
+        patient.setInsurance(insurance); // now patiemt is dirty
         insurance.setPatient(patient); // to maintaoin bidirection consistency
          return patient;
     }

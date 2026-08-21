@@ -33,7 +33,7 @@ public class Appointment {
     private Patient patient;
 
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)  // owning side
     @ToString.Exclude
     @JoinColumn(nullable = false)
     private Doctor doctor;
