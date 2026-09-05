@@ -11,6 +11,8 @@ import com.codingshuttle.youtube.hospitalManagement.entity.Patient;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
@@ -28,6 +30,8 @@ public class AppointmentService {
 
 
     @Transactional
+    @Secured("ROLE_PATIENT")
+
     public AppointmentResponseDto createNewAppointment(CreateAppointmentRequestDto createAppointmentRequestDto) {
         Long doctorId = createAppointmentRequestDto.getDoctorId();
         Long patientId = createAppointmentRequestDto.getPatientId();
@@ -52,6 +56,7 @@ public class AppointmentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('appointment:write') or #doctorId) == authentication.principal.id")
     public Appointment reAssignAppointmentToAnotherDoctor(Long appointmentId,Long doctorId){
       Appointment appointment=appointmentRepository.findById(appointmentId).orElseThrow();
         Doctor doctor=doctorRepository.findById(doctorId).orElseThrow();
@@ -60,6 +65,9 @@ public class AppointmentService {
         doctor.getAppointments().add(appointment);   // just for bidirectional consistency
         return appointment;
     }
+
+    // id doct a is trying to access doctor b appointm,ents
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('DOCTOR') AND #doctorId) == authentication.principal.id")
     public List<AppointmentResponseDto> getAllAppointmentsOfDoctor(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow();
 
