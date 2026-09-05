@@ -16,6 +16,10 @@ import java.util.List;
 @ToString
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+
 @Setter
 @Table(
         name="patient",
@@ -29,6 +33,7 @@ import java.util.List;
 
 )
 public class Patient {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,6 +48,11 @@ public class Patient {
     private String email;
 
     private String gender;
+
+   // connecting patient to user so that when a new is foemed 2 varoables as user nad patient are not foemed so comnnnecr ut
+    @OneToOne
+    @MapsId // now in patient table , no id field , only user id -> hiberate will make id as user id -> patient user ke bina sense nhi banata
+    private User user;
 
     @CreationTimestamp
     @Column(updatable = false)

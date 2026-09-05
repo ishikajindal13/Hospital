@@ -3,6 +3,7 @@ package com.codingshuttle.youtube.hospitalManagement.controller;
 
 import com.codingshuttle.youtube.hospitalManagement.dto.LoginRequestDto;
 import com.codingshuttle.youtube.hospitalManagement.dto.LoginResponseDto;
+import com.codingshuttle.youtube.hospitalManagement.dto.SignUpRequestDto;
 import com.codingshuttle.youtube.hospitalManagement.dto.SignupResponseDto;
 import com.codingshuttle.youtube.hospitalManagement.security.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class AuthController {
     // dont get coinfusde
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@RequestBody LoginRequestDto signupRequestDto){
+    public ResponseEntity<SignupResponseDto> signup(@RequestBody SignUpRequestDto signupRequestDto){
         return ResponseEntity.ok(authService.signup(signupRequestDto));
     }
 }

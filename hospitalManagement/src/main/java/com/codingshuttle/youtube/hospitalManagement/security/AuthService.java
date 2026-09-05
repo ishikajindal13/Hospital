@@ -3,8 +3,12 @@ package com.codingshuttle.youtube.hospitalManagement.security;
 
 import com.codingshuttle.youtube.hospitalManagement.dto.LoginRequestDto;
 import com.codingshuttle.youtube.hospitalManagement.dto.LoginResponseDto;
+import com.codingshuttle.youtube.hospitalManagement.dto.SignUpRequestDto;
 import com.codingshuttle.youtube.hospitalManagement.dto.SignupResponseDto;
+import com.codingshuttle.youtube.hospitalManagement.entity.Patient;
 import com.codingshuttle.youtube.hospitalManagement.entity.type.AuthProviderType;
+import com.codingshuttle.youtube.hospitalManagement.entity.type.RoleType;
+import com.codingshuttle.youtube.hospitalManagement.repository.PatientRepository;
 import com.codingshuttle.youtube.hospitalManagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 
@@ -31,6 +37,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;   // this is one way hash , u can never go back
+    private final PatientRepository patientRepository;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
      Authentication authentication=authenticationManager.authenticate(
@@ -44,7 +51,7 @@ public class AuthService {
          return new LoginResponseDto(token, user.getId());
     }
 
-    public User signUpInternal(LoginRequestDto signupRequestDto,AuthProviderType authProviderType, String providerId){
+    public User signUpInternal(SignUpRequestDto signupRequestDto,AuthProviderType authProviderType, String providerId){
         User user=userRepository.findByUsername(signupRequestDto.getUsername()).orElse(null);
         if(user!=null) throw new IllegalArgumentException("user alredy exists");
 
@@ -52,16 +59,26 @@ public class AuthService {
                 .username(signupRequestDto.getUsername())
                .providerId(providerId)
                .providerType(authProviderType)
+               .roles(signupRequestDto.getRoles()) // Role.PATIENT
                 .build();
        if(authProviderType==AuthProviderType.EMAIL){
            user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
        }
-       return userRepository.save(user);
+
+        userRepository.save(user);
+
+       Patient patient=Patient.builder()
+               .name(signupRequestDto.getName())
+               .email(signupRequestDto.getUsername())
+               .user(user)
+               .build();
+       patientRepository.save(patient);
+       return user;
     }
 
 
     // login conmtroller (by email id)
-    public SignupResponseDto signup(LoginRequestDto signupRequestDto) {
+    public SignupResponseDto signup(SignUpRequestDto signupRequestDto) {
        User user=signUpInternal(signupRequestDto,AuthProviderType.EMAIL,null);
         return new SignupResponseDto(user.getId(), user.getUsername());
 
@@ -74,7 +91,9 @@ public class AuthService {
 
         User user = userRepository.findByProviderIdAndProviderType(providerId, providerType).orElse(null);
 
+
         String email = oAuth2User.getAttribute("email");
+        String name=oAuth2User.getAttribute("name");
 
         User emailUser = userRepository.findByUsername(email).orElse(null);
 
@@ -82,7 +101,7 @@ public class AuthService {
             //signup flow
             // usrr doesnt exist
             String username = authUtil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
-            user = signUpInternal(new LoginRequestDto(username, null),providerType,providerId);
+            user = signUpInternal(new SignUpRequestDto(username, null,name,Set.of(RoleType.PATIENT)),providerType,providerId);
 
         } else if (user != null) {
             // agar user chnage hua h toh voh bho save kr liya
