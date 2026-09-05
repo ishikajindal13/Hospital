@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+hospitalManagement/src/main/resources/application.properties
